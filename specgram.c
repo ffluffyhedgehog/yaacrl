@@ -5,6 +5,7 @@
 #include "specgram.h"
 
 //Used some code from http://ofdsp.blogspot.com/2011/08/short-time-fourier-transform-with-fftw3.html
+//Actually, reworked it for kiss_fft
 void specgram(float * from, float ** to, int signal_length, int window_size = 2048, float overlap = 0.5) {
   float * window;
   hanning(window_size, window);
@@ -72,7 +73,13 @@ void specgram(float * from, float ** to, int signal_length, int window_size = 20
     for(int j = 0; j < window_size/2 + 1; ++j) {
       to[i][j] = log_transform(fft_result[i][j]);
 	}
+	free(fft_result[i]);
   }
+  free(fft_result);
+  free(cpx_from);
+  free(cpx_to);
+  free(window);
+  free(cfg);
   return;
 }
 
