@@ -1,5 +1,5 @@
 This license applies to all parts of yaacrl that are not externally
-maintained libraries.  The externally maintained libraries used by V8
+maintained libraries.  The externally maintained libraries used by yaacrl
 are:
     kiss_fft, located in kiss_fft, copyrighted by Mark Borgerding,
     released under BSD License.
