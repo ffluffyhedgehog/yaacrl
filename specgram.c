@@ -8,39 +8,44 @@
 #include "kiss_fft/kiss_fft.h"
 #include "../specgram.h"
 
-/* 
+
+/*
+ * Calculates signal specgram using fft.
+ *
+ * Returns a specgram.
+ *
  * Used some code from: 
  * http://ofdsp.blogspot.com/2011/08/short-time-fourier-transform-with-fftw3.html
  * Actually, reworked it for kiss_fft
-*/
-void specgram(float *from,
-              float **to,
-              int signal_length,
-              int window_size = 2048,
-              float overlap = 0.5) {
+ */
+Specgram gen_specgram(float * from,  // Samples
+              int signal_length,     // Quantity of samples given
+              int window_size,       // Quantity of samples per specgram window.
+                                     // 2048 or 4096 recommended.
+                                     // Must be a power of 2.
+              float overlap) {       // How windows overlap each other.
+                                     // Must be less than 1. 0.5 recommended
   float *window;
   hanning(window_size, window);
   int chunk_position = 0;
   int read_index, write_index;
-
   int num_chunks = signal_length/window_size + 1, chunks_processed = 0;
+
+  Specgram to;
+  to.freq = window_size/2 + 1;
+  to.windows = num_chunks;
+
   kiss_fft_cpx **fft_result;
   fft_result = (kiss_fft_cpx**) malloc(num_chunks * sizeof(kiss_fft_cpx*));
-  to = (float**) malloc(num_chunks * sizeof(float*));
+  to.sg = (float**) malloc(num_chunks * sizeof(float*));
   for (int i = 0; i < num_chunks; i++) {
     fft_result[i] = (kiss_fft_cpx*) malloc(
                                           (window_size/2 + 1) *
                                           sizeof(kiss_fft_cpx));
-    to[i] = (float*) malloc ((window_size/2 + 1) * sizeof(float));
-  }
-
-  // Calculate the window function
-  for (int i = 0; i < signal_length; ++i) {
-    to[i] = from[i]*to[i];
+    to.sg[i] = (float*) malloc (to.freq * sizeof(float));
   }
 
   kiss_fft_cfg cfg = kiss_fft_alloc(1024, 0, NULL, NULL);
-
   kiss_fft_cpx * cpx_from, *cpx_to;
 
   // Should we stop reading in chunks?
@@ -50,7 +55,7 @@ void specgram(float *from,
   cpx_to = (kiss_fft_cpx*) malloc(window_size * sizeof(kiss_fft_cpx));
   cpx_from = (kiss_fft_cpx*) malloc(window_size * sizeof(kiss_fft_cpx));
 
-  while ( chunk_position < signal_length && !bStop ) {
+  while ( chunk_position < signal_length && !stop ) {
     // Copy the chunk into our buffer
     for (int i = 0; i < window_size; i++) {
       read_index = chunk_position + i;
@@ -72,7 +77,7 @@ void specgram(float *from,
     // We do this because the FFT output is mirrored about the nyquist
     // frequency, so the second half of the data is redundant. This is how
     // Matlab's spectrogram routine works.
-    for (int i = 0; i < window_size/2 + 1; i++) {
+    for (int i = 0; i < to.freq; i++) {
       write_index = chunk_position + i;
       fft_result[chunks_processed][i].r = cpx_to[i].r;
       fft_result[chunks_processed][i].i = cpx_to[i].i;
@@ -82,8 +87,8 @@ void specgram(float *from,
   }
   // process the fft_result data into the spectrogram
   for (int i = 0; i < num_chunks; ++i) {
-    for (int j = 0; j < window_size/2 + 1; ++j) {
-      to[i][j] = log_transform(fft_result[i][j]);
+    for (int j = 0; j < to.freq; ++j) {
+      to.sg[i][j] = log_transform(fft_result[i][j]);
     }
     free(fft_result[i]);
   }
@@ -92,7 +97,7 @@ void specgram(float *from,
   free(cpx_to);
   free(window);
   free(cfg);
-  return;
+  return to;
 }
 
 inline float log_transform(kiss_fft_cpx val) {

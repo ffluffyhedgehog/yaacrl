@@ -1,24 +1,28 @@
 /*
  * Copyright 2016 yaacrl contributors
 */
+
 #ifndef SPECGRAM_H_
 #define SPECGRAM_H_
 
+typedef struct {
+  float** sg;  // Specgram itself
+  int windows;  // X axis - quantity of windows
+  int freq;  // Y axis - quantity of freq bins
+}  Specgram;
+
 /*
- * Calculates signal specgram using fft, and then applies log transform to it.
- * * * * * * * * * * * * * * * * * * * * *
- * Takes raw float data (-1 to 1)
- * * * * * * * * * * * * * * * * * * * * *
- * The place "to" is pointing will be cleared and re-initialized, so there is
- * no need for initializing it.
- * * * * * * * * * * * * * * * * * * * * *
- * Size of to is (signal_length/window_size + 1)x(window_size/2 + 1). The first is time, the second is frequency
+ * Calculates signal specgram using fft.
+ *
+ * Returns a specgram.
  */
-void specgram(float * from,
-              float ** to,
-              int signal_length,
-              int window_size = 2048,
-              float overlap = 0.5);
+Specgram gen_specgram(float * from,  // Samples
+              int signal_length,     // Quantity of samples given
+              int window_size,       // Quantity of samples per specgram window.
+                                     // 2048 or 4096 recommended.
+                                     // Must be a power of 2.
+              float overlap);        // How windows overlap each other.
+                                     // Must be less than 1. 0.5 recommended
 
 /*
  * Builds a Hann window function in window.
