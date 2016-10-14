@@ -5,8 +5,10 @@
 #ifndef SPECGRAM_H_
 #define SPECGRAM_H_
 
+#include "kiss_fft/kiss_fft.h"
 typedef struct {
   float** sg;  // Specgram itself
+  // Indices: [time_index][freq_index]
   int windows;  // X axis - quantity of windows
   int freq;  // Y axis - quantity of freq bins
 }  Specgram;
@@ -35,6 +37,6 @@ void hanning(int window_size, float * window);
  * Transforms complex falue into float, also turning it to decibell scale.
  */
 
-inline float log_transform(kiss_fft_cpx val);
+float log_transform(kiss_fft_cpx val);
 
 #endif  // SPECGRAM_H_

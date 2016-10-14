@@ -6,7 +6,7 @@
 #include <math.h>
 
 #include "kiss_fft/kiss_fft.h"
-#include "../specgram.h"
+#include "./specgram.h"
 
 
 /*
@@ -104,7 +104,7 @@ inline float log_transform(kiss_fft_cpx val) {
   return 10*log10(val.i * val.i + val.r * val.r);
 }
 
-void hanning(int window_size; float * window) {
+void hanning(int window_size, float * window) {
   window = (float*) malloc(window_size * sizeof(float));
   for (int i = 0; i < window_size; ++i) {
     window[i] = (1 - cos((2 * M_PI * i) / (window_size - 1) ));
