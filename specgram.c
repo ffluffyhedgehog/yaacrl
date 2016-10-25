@@ -45,7 +45,7 @@ Specgram gen_specgram(float * from,  // Samples
     to.sg[i] = (float*) malloc (to.freq * sizeof(float));
   }
 
-  kiss_fft_cfg cfg = kiss_fft_alloc(1024, 0, NULL, NULL);
+  kiss_fft_cfg cfg = kiss_fft_alloc(window_size, 0, NULL, NULL);
   kiss_fft_cpx * cpx_from, *cpx_to;
 
   // Should we stop reading in chunks?
