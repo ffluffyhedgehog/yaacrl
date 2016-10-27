@@ -6,7 +6,7 @@
 #include <math.h>
 
 #include "kiss_fft/kiss_fft.h"
-#include "../specgram.h"
+#include "./specgram.h"
 
 
 /*
