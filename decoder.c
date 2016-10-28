@@ -14,8 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "./decoder.h"
-#define TRUE 1
-#define FALSE 0
+#include <stdbool.h>
 
 unsigned char buffer4[4];
 unsigned char buffer2[2];
@@ -25,7 +24,7 @@ wave* decode(char* filename) {
   wave* audio = (wave*) malloc(sizeof(wave));
 
   if (filename == NULL) {
-    printf("Error in malloc\n");
+    fprintf(stderr, "Error in malloc\n");
     free(audio);
     return NULL;
   }
@@ -33,7 +32,7 @@ wave* decode(char* filename) {
   printf("Opening  file..\n");
   ptr = fopen(filename, "rb");
   if (ptr == NULL) {
-    printf("Error opening file\n");
+    fprintf(stderr, "Error opening file\n");
     free(audio);
     return NULL;
   }
@@ -163,7 +162,7 @@ wave* decode(char* filename) {
   if (audio->header.format_type == 1) {  // PCM
     long i = 0;
     char data_buffer[size_of_each_sample];
-    int  size_is_correct = TRUE;
+    bool size_is_correct = true;
     audio->num_samples = num_samples;
     audio->samples = (float*) malloc(sizeof(float)*num_samples);
     // make sure that the bytes-per-sample
@@ -171,11 +170,11 @@ wave* decode(char* filename) {
     long bytes_in_each_channel = (size_of_each_sample / audio->header.channels);
     if ((bytes_in_each_channel * audio->header.channels) !=
                                     size_of_each_sample) {
-      printf("Error: %ld x %ud <> %ld\n",
+      fprintf(stderr, "Error: %ld x %ud <> %ld\n",
         bytes_in_each_channel,
         audio->header.channels,
         size_of_each_sample);
-      size_is_correct = FALSE;
+      size_is_correct = false;
     }
 
     if (size_is_correct) {
@@ -221,7 +220,7 @@ wave* decode(char* filename) {
             audio->samples[i] = data_in_channel / ((float)high_limit);
           }
         } else {
-          printf("Error reading file. %d bytes\n", read);
+          fprintf(stderr, "Error reading file. %d bytes\n", read);
           break;
         }
       }  //  for (i =1; i <= num_samples; i++) {
