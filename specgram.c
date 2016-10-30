@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+//#include <stdio.h>
 
 #include "kiss_fft/kiss_fft.h"
 #include "./specgram.h"
@@ -14,7 +15,7 @@
  *
  * Returns a specgram.
  *
- * Used some code from: 
+ * Used some code from:
  * http://ofdsp.blogspot.com/2011/08/short-time-fourier-transform-with-fftw3.html
  * Actually, reworked it for kiss_fft
  */
@@ -26,10 +27,14 @@ Specgram gen_specgram(float * from,  // Samples
               float overlap) {       // How windows overlap each other.
                                      // Must be less than 1. 0.5 recommended
   float *window;
-  hanning(window_size, window);
+  window = hanning(window_size);
   int chunk_position = 0;
-  int read_index, write_index;
-  int num_chunks = signal_length/window_size + 1, chunks_processed = 0;
+  int read_index, write_index, chunks_processed = 0, num_chunks = 1;
+  for (int i = window_size; i < signal_length;) {
+    i += window_size;
+	i -= window_size*overlap;
+    ++num_chunks;
+  }
 
   Specgram to;
   to.freq = window_size/2 + 1;
@@ -97,6 +102,16 @@ Specgram gen_specgram(float * from,  // Samples
   free(cpx_to);
   free(window);
   free(cfg);
+  /*
+  if( 1 ){
+    FILE * a = fopen("specgram.txt", "r");
+	for(int i = 0; i < num_chunks; i++) {
+      for(int j = 0; j < window_size; j++)
+        fprintf(stdout, "%f ", to.sg[i][j]);
+	  fprintf(stdout, "\n");
+    }
+	fclose(a);
+  } */
   return to;
 }
 
@@ -104,11 +119,12 @@ inline float log_transform(kiss_fft_cpx val) {
   return 10*log10(val.i * val.i + val.r * val.r);
 }
 
-void hanning(int window_size, float * window) {
-  window = (float*) malloc(window_size * sizeof(float));
+float* hanning(int window_size) {
+  float* window = (float*) malloc(window_size * sizeof(float));
   for (int i = 0; i < window_size; ++i) {
     window[i] = (1 - cos((2 * M_PI * i) / (window_size - 1) ));
   }
+  return window;
 }
 
 

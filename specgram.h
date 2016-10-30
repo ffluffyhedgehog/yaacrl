@@ -31,7 +31,7 @@ Specgram gen_specgram(float * from,  // Samples
  * * * * * * * * * * * * * * * * * * * * *
  * No need in initializing window as well
  */
-void hanning(int window_size, float * window);
+float* hanning(int window_size);
 
 /*
  * Transforms complex falue into float, also turning it to decibell scale.
