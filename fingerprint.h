@@ -66,6 +66,11 @@ typedef struct PeakHash {
   int time;
 } PeakHash;
 
+typedef struct PeakHashCollection {
+	PeakHash * peak_hashes;
+	int count;
+} PeakHashCollection;
+
 /*
  * Fingerprinting function
  *  :params:
@@ -75,7 +80,7 @@ typedef struct PeakHash {
  *    Pointer to PeakHash array, that has to be cleaned by free() after use,
  *    as it is dynamically created
 */
-PeakHash * fingerprint(float * samples);
+PeakHashCollection * fingerprint(float * samples, int samples_count);
 
 
 /*

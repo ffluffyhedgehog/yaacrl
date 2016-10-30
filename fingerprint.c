@@ -11,9 +11,8 @@
 #include "./fingerprint.h"
 #include "./specgram.h"
 
-#define ARRAY_INIT_SIZE 10
-#define SIZE_FREQ 400
-#define SIZE_TIME 200
+// Initial size of dynamic arrays
+#define ARRAY_INIT_SIZE 20
 
 // Sorting functions for qsort
 int sort_by_freq(const void * p1, const void * p2) {
@@ -25,21 +24,11 @@ int sort_by_time(const void * p1, const void * p2) {
 }
 
 
-PeakHash * fingerprint(float * samples) {
-  /*
-  TODO: support for options (ie NBRHD_SIZE)
-
-  Will be included in production and after decoder is ready:
-  Specgram spec; = gen_specgram(channel_samples,
-                                channel_length,
-                                window_size,
-                                window_ratio);
-  For now - working with generated with python script 2-dim array
-  */
-  Specgram spec;
-  spec.freq = SIZE_FREQ;
-  spec.windows = SIZE_TIME;
-  load_test_data(&spec);
+PeakHashCollection * fingerprint(float * samples, int samples_count) {
+  Specgram spec = gen_specgram(samples,
+                               samples_count,
+                               DEFAULT_WINDOW_SIZE,
+                               DEFAULT_OVERLAP_RATIO);
   Peak * peaks = NULL;
   int peaks_count = detect_peaks(&peaks, spec);
   // qsort(peaks, peaks_count, sizeof(Peak), sort_by_freq);
@@ -50,7 +39,11 @@ PeakHash * fingerprint(float * samples) {
   for (int i = 0; i < spec.windows; i++)
     free(spec.sg[i]);
   free(spec.sg);
-  return hashes;
+  PeakHashCollection * result = (PeakHashCollection *) 
+                                malloc(sizeof(PeakHashCollection));
+  (*result).peak_hashes = hashes;
+  (*result).count = hashes_count;
+  return result;
 }
 
 
