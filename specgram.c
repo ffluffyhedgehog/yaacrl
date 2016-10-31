@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <math.h>
-//#include <stdio.h>
+// #include <stdio.h>
 
 #include "kiss_fft/kiss_fft.h"
 #include "./specgram.h"
@@ -32,7 +32,7 @@ Specgram gen_specgram(float * from,  // Samples
   int read_index, write_index, chunks_processed = 0, num_chunks = 1;
   for (int i = window_size; i < signal_length;) {
     i += window_size;
-	i -= window_size*overlap;
+  i -= window_size*overlap;
     ++num_chunks;
   }
 
