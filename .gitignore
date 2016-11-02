@@ -27,8 +27,3 @@
 *.exe
 *.out
 *.app
-
-# Input/output files for test.sh
-test_data
-*test*.txt
-array.txt
