@@ -13,8 +13,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./decoder.h"
+#include <stdint.h>
 #include <stdbool.h>
+#include "./decoder.h"
 
 unsigned char buffer4[4];
 unsigned char buffer2[2];
@@ -143,11 +144,11 @@ wave* decode(char* filename) {
 
 
   // calculate no.of samples
-  long num_samples = (8 * audio->header.data_size) /
+  int64_t num_samples = (8 * audio->header.data_size) /
     (audio->header.channels * audio->header.bits_per_sample);
   printf("Number of samples:%lu \n", num_samples);
 
-  long size_of_each_sample = (audio->header.channels *
+  int64_t size_of_each_sample = (audio->header.channels *
     audio->header.bits_per_sample) / 8;
   printf("Size of each sample:%ld bytes\n", size_of_each_sample);
 
@@ -160,14 +161,15 @@ wave* decode(char* filename) {
 
   // read each sample from data chunk if PCM
   if (audio->header.format_type == 1) {  // PCM
-    long i = 0;
+    int64_t i = 0;
     char data_buffer[size_of_each_sample];
     bool size_is_correct = true;
     audio->num_samples = num_samples;
     audio->samples = (float*) malloc(sizeof(float)*num_samples);
     // make sure that the bytes-per-sample
     // is completely divisible by num.of channels
-    long bytes_in_each_channel = (size_of_each_sample / audio->header.channels);
+    int64_t bytes_in_each_channel = (size_of_each_sample /
+                                      audio->header.channels);
     if ((bytes_in_each_channel * audio->header.channels) !=
                                     size_of_each_sample) {
       fprintf(stderr, "Error: %ld x %ud <> %ld\n",
@@ -179,8 +181,8 @@ wave* decode(char* filename) {
 
     if (size_is_correct) {
           // the valid amplitude range for values based on the bits per sample
-      long low_limit = 0l;
-      long high_limit = 0l;
+      int64_t low_limit = 0l;
+      int64_t high_limit = 0l;
       switch (audio->header.bits_per_sample) {
         case 8:
           low_limit = -128;
