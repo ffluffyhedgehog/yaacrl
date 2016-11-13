@@ -29,22 +29,8 @@ PeakHashCollection * fingerprint(float * samples, int samples_count) {
                                samples_count,
                                DEFAULT_WINDOW_SIZE,
                                DEFAULT_OVERLAP_RATIO);
-  // GETTING CLEAR SPECGRAM
-  FILE * f = fopen("spec.test.txt", "w");
-  for (int i = 0; i < spec.freq; i++) {
-    for (int j = 0; j < spec.windows; j++)
-      fprintf(f, "%f ", spec.sg[j][i]);
-    fprintf(f, "\n");
-  }
-  fclose(f);
   Peak * peaks = NULL;
   int peaks_count = detect_peaks(&peaks, spec);
-  // GETTING PEAKS OF SPECGRAM
-  f = fopen("peaks.test.txt", "w");
-    for (int i = 0; i < peaks_count; i++) {
-      fprintf(f, "%d %d\n", peaks[i].freq, peaks[i].time);
-  }
-  fclose(f);
   // qsort(peaks, peaks_count, sizeof(Peak), sort_by_freq);
   // Sorting peaks by freq, because in dejavu indices are swapped
   PeakHash * hashes = NULL;
