@@ -1,18 +1,21 @@
 This license applies to all parts of yaacrl that are not externally
 maintained libraries.  The externally maintained libraries used by yaacrl
 are:
-    kiss_fft, located in kiss_fft, copyrighted by Mark Borgerding,
+    kiss_fft, located in kiss_fft/, copyrighted by Mark Borgerding,
     released under BSD License.
+
+	dr_wav, located in dr_wav/, developed by David Reid - mackron@gmail.com,
+	released in public domain
 
 These libraries have their own licenses; we recommend you read them,
 as their terms may differ from the terms below.
 
-Further license information can be found in LICENSE files located in 
+Further license information can be found in LICENSE files located in
 sub-directories.
 
 MIT License
 
-Copyright (c) 2016 yaacrl contributors
+Copyright (c) 2016 Anton Zhdan-Pushkin, Fedir Smilyanets
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -6,6 +6,7 @@
 #define SPECGRAM_H_
 
 #include "kiss_fft/kiss_fft.h"
+
 typedef struct {
   float** sg;  // Specgram itself
   // Indices: [time_index][freq_index]
@@ -27,11 +28,11 @@ Specgram gen_specgram(float * from,  // Samples
                                      // Must be less than 1. 0.5 recommended
 
 /*
- * Builds a Hann window function in window.
+ * Builds a hann windowing function
  * * * * * * * * * * * * * * * * * * * * *
  * No need in initializing window as well
  */
-float* hanning(int window_size);
+float* windowing(int window_size);
 
 /*
  * Transforms complex falue into float, also turning it to decibell scale.

@@ -1,11 +1,8 @@
 all: main.o decoder.o specgram.o fingerprint.o
-	gcc main.o decoder.o specgram.o fingerprint.o sha1.o kiss_fft.o -o yaacrl -lm
+	gcc main.o specgram.o fingerprint.o sha1.o kiss_fft.o -o yaacrl -lm
 
 main.o: main.c
 	gcc main.c -c -g
-
-decoder.o: decoder.c decoder.h
-	gcc decoder.c -c -g
 
 specgram.o: specgram.c specgram.h kiss_fft.o
 	gcc specgram.c -c -g
