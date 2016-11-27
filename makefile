@@ -20,3 +20,7 @@ kiss_fft.o: kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 
 clean:
 	rm *.o yaacrl.so
+
+
+cpp:
+	g++ -o main main.cpp database.cpp -L/usr/lib  -lmysqlclient -lpthread -lz -lm -ldl -lssl -lcrypto -I/usr/include/mysql
