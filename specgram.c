@@ -27,12 +27,12 @@ Specgram gen_specgram(float * from,  // Samples
               float overlap) {       // How windows overlap each other.
                                      // Must be less than 1. 0.5 recommended
   float *window;
-  window = hanning(window_size);
+  window = windowing(window_size);
   int chunk_position = 0;
   int read_index, write_index, chunks_processed = 0, num_chunks = 1;
   for (int i = window_size; i < signal_length;) {
     i += window_size;
-  i -= window_size*overlap;
+    i -= window_size*overlap;
     ++num_chunks;
   }
 
@@ -40,13 +40,8 @@ Specgram gen_specgram(float * from,  // Samples
   to.freq = window_size/2 + 1;
   to.windows = num_chunks;
 
-  kiss_fft_cpx **fft_result;
-  fft_result = (kiss_fft_cpx**) malloc(num_chunks * sizeof(kiss_fft_cpx*));
   to.sg = (float**) malloc(num_chunks * sizeof(float*));
   for (int i = 0; i < num_chunks; i++) {
-    fft_result[i] = (kiss_fft_cpx*) malloc(
-                                          (window_size/2 + 1) *
-                                          sizeof(kiss_fft_cpx));
     to.sg[i] = (float*) malloc (to.freq * sizeof(float));
   }
 
@@ -78,40 +73,21 @@ Specgram gen_specgram(float * from,  // Samples
     // Perform the FFT on our chunk
     kiss_fft(cfg, cpx_from, cpx_to);
 
-    // Copy the first (window_size/2 + 1) data points into your spectrogram.
+    // Copy the first (window_size/2 + 1) data points into spectrogram.
     // We do this because the FFT output is mirrored about the nyquist
     // frequency, so the second half of the data is redundant. This is how
     // Matlab's spectrogram routine works.
     for (int i = 0; i < to.freq; i++) {
       write_index = chunk_position + i;
-      fft_result[chunks_processed][i].r = cpx_to[i].r;
-      fft_result[chunks_processed][i].i = cpx_to[i].i;
+	  to.sg[chunks_processed][i] = log_transform(cpx_to[i]);
     }
     chunk_position += window_size*(1 - overlap);
     chunks_processed++;
   }
-  // process the fft_result data into the spectrogram
-  for (int i = 0; i < num_chunks; ++i) {
-    for (int j = 0; j < to.freq; ++j) {
-      to.sg[i][j] = log_transform(fft_result[i][j]);
-    }
-    free(fft_result[i]);
-  }
-  free(fft_result);
   free(cpx_from);
   free(cpx_to);
   free(window);
-  free(cfg);
-  /*
-  if( 1 ){
-    FILE * a = fopen("specgram.txt", "r");
-	for(int i = 0; i < num_chunks; i++) {
-      for(int j = 0; j < window_size; j++)
-        fprintf(stdout, "%f ", to.sg[i][j]);
-	  fprintf(stdout, "\n");
-    }
-	fclose(a);
-  } */
+  kiss_fft_free(cfg);
   return to;
 }
 
@@ -119,9 +95,9 @@ inline float log_transform(kiss_fft_cpx val) {
   return 10*log10(val.i * val.i + val.r * val.r);
 }
 
-float* hanning(int window_size) {
+float* windowing(int window_size) {
   float* window = (float*) malloc(window_size * sizeof(float));
-  for (int i = 0; i < window_size; ++i) {
+  for (int i = 0; i < window_size; ++i) {   // hanning function applied
     window[i] = (1 - cos((2 * M_PI * i) / (window_size - 1) ));
   }
   return window;
