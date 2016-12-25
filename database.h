@@ -2,6 +2,7 @@
 #define YAACRL_DATABASE_H
 
 #include "mysql.h"
+#include "fingerprint.h"
 
 #define FIELD_FILE_SHA1 "file_sha1"
 #define FIELD_SONG_ID "song_id"
@@ -14,17 +15,18 @@ class Database {
 public:
     Database();
     void get_songs();
+    int insert_song(char *, char hash[41]);
+    void insert_hashes(int, PeakHashCollection *);
+    void set_song_fingerprinted(int);
+    void return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** );
+    void get_song_by_id(int sid);
     //void delete_unfingerprinted_songs();
     //void get_num_songs();
     //void get_num_fingerprints();
-    //void set_song_fingerprinted(int sid);
-    //void get_song_by_id(int sid);
     //void insert(hash, sid, offset);
-    //void insert_song(char * song_name);
     //void query(hash);
     //void get_iterable_kv_pairs();
-    //void insert_hashes(sid, hash);
-    //void return_matches(hashes);
+
 
 
     ~Database();

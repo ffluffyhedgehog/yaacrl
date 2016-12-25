@@ -9,7 +9,8 @@ class Yaacrl {
 public:
     Yaacrl();
     void init();
-    void fingerprint_file();
+    void fingerprint_file(char *);
+    void recognize_file(char *);
     ~Yaacrl();
 
 
