@@ -19,11 +19,9 @@ int main(int argc, char** argv) {
 	PeakHashCollection * hashes = fingerprint(pSampleData,
                                               pWav->totalSampleCount);
 	//GETTING HASHES
-    FILE * f = fopen("res.test.txt", "w");
     for (int i = 0; i < hashes->count; i++)
-        fprintf(f, "%s -> %d\n", hashes->peak_hashes[i].hash,
+        printf("%s -> %d\n", hashes->peak_hashes[i].hash,
                                  hashes->peak_hashes[i].time);
-    fclose(f);
 	drwav_close(pWav);
     free((*hashes).peak_hashes);
     free(hashes);
