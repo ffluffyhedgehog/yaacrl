@@ -1,9 +1,9 @@
 #include <iostream>
-#include "database.h"
-
+#include "yaacrl.h"
 
 int main() {
-    Database * d = new Database;
-    delete d;
+    Yaacrl y;
+    //y.init();
+    y.fingerprint_file();
     return 0;
 }

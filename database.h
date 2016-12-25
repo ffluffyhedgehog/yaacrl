@@ -13,6 +13,20 @@ class Database {
     MYSQL *connection;
 public:
     Database();
+    void get_songs();
+    //void delete_unfingerprinted_songs();
+    //void get_num_songs();
+    //void get_num_fingerprints();
+    //void set_song_fingerprinted(int sid);
+    //void get_song_by_id(int sid);
+    //void insert(hash, sid, offset);
+    //void insert_song(char * song_name);
+    //void query(hash);
+    //void get_iterable_kv_pairs();
+    //void insert_hashes(sid, hash);
+    //void return_matches(hashes);
+
+
     ~Database();
 };
 
