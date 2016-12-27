@@ -183,7 +183,6 @@ void SHA1Input(     SHA1Context         *context,
         context->Corrupted = 1;
         return;
     }
-
     while(length-- && !context->Corrupted)
     {
         context->Message_Block[context->Message_Block_Index++] =

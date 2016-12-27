@@ -95,7 +95,7 @@ int generate_hashes(PeakHash ** peak_hashes, Peak * peaks, int count) {
                                         current_size * sizeof(PeakHash));
   SHA1Context sha;
   int k, t1, t2, freq1, freq2, t_delta;
-  char * sha1_input;
+  char * sha1_input = (char *) malloc(10 * sizeof(char));
   for (int i = 0; i < count; i++) {
     for (int j = 1; j < DEFAULT_FAN_VALUE; j++) {
       if (i + j < count) {
@@ -110,7 +110,7 @@ int generate_hashes(PeakHash ** peak_hashes, Peak * peaks, int count) {
           sha1_input = (char *) realloc(sha1_input, (k+1) * sizeof(char));
           snprintf(sha1_input, k+1, "%d|%d|%d", freq1, freq2, t2-t1);
           SHA1Reset(&sha);
-          SHA1Input(&sha, sha1_input, k);
+          SHA1Input(&sha, (const unsigned char *) sha1_input, k);
           if (SHA1Result(&sha)) {
             // Length of sha1 hash in hex is 40
             char hash[41];
