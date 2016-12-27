@@ -96,11 +96,13 @@ int Yaacrl::add_file(std::string filename_string) {
     return sid;
 }
 
-int Yaacrl::recognize_wav(std::string filename_string) {
+std::map<std::string, int> Yaacrl::recognize_wav(std::string filename_string) {
     const char * filename = filename_string.c_str();
     drwav* pWav = drwav_open_file(filename);
     if (pWav == NULL) {
-        return -1;
+        std::map<std::string, int> res;
+        res["success"] = 0;
+        return res;
     }
     float* pSampleData = (float*) malloc((size_t)pWav->totalSampleCount * sizeof(float));
     drwav_read_f32(pWav, pWav->totalSampleCount, pSampleData);
@@ -115,11 +117,15 @@ int Yaacrl::recognize_wav(std::string filename_string) {
 }
 
 
-int Yaacrl::recognize_fingerprints(std::string filename) {
+std::map<std::string, int> Yaacrl::recognize_fingerprints(std::string filename) {
     const char * input = filename.c_str();
     FILE * f = fopen(input, "r");
-    if (f == NULL)
-        return -2;
+    if (f == NULL) {
+        std::map<std::string, int> res;
+        res["success"] = 0;
+        return res;
+    }
+
     char print[21];
     int time;
     int START_ARRAY_SIZE = 200;
@@ -139,11 +145,11 @@ int Yaacrl::recognize_fingerprints(std::string filename) {
     hashes->count = real_count;
     hashes->peak_hashes = (PeakHash *) realloc(hashes->peak_hashes, hashes->count * sizeof(PeakHash));
     fclose(f);
-    return recognize_hashes(hashes);
+    return  recognize_hashes(hashes);
 }
 
 
-int Yaacrl::recognize_hashes(PeakHashCollection * hashes) {
+std::map<std::string, int> Yaacrl::recognize_hashes(PeakHashCollection * hashes) {
     PeakHashCollection matches;
     int * matches_ids;
     db->return_matches(hashes, &matches, &matches_ids);
@@ -181,7 +187,12 @@ int Yaacrl::recognize_hashes(PeakHashCollection * hashes) {
     free(matches_ids);
     free((*hashes).peak_hashes);
     free(hashes);
-    return max_id;
+    std::map <std::string, int> result;
+    result["success"] = 1;
+    result["id"] = max_id;
+    result["offset"] = max_diff;
+    result["percentage"] = 100;
+    return result;
 }
 
 std::string Yaacrl::get_song_by_id(int sid) {

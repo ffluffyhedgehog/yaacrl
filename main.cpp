@@ -10,8 +10,13 @@ int main() {
     //std::cout << "RECOGN BRAD: " << y.get_song_by_id(res)<< std::endl;
     //y.clear_database();
     //y.fingerprints_to_file("audio/brad_cut.wav");
-    int res = y.recognize_fingerprints("audio/brad.wav.fingerprints");
-    std::cout << "RECOGN BRAD: " << y.get_song_by_id(res)<< std::endl;
+    //std::map<std::string, int> res = y.recognize_fingerprints("audio/brad.wav.fingerprints");
+    std::map<std::string, int> res = y.recognize_wav("audio/brad_cut.wav");
+    std::cout << "RECOGN BRAD: \n";
+    std::cout << "\n\tID: " << res["id"];
+    std::cout << "\n\tOffset" << res["offset"];
+    std::cout << "\n\tMatch %%: " << res["percentage"];
+
     //y.recognize_fingerprints("audio/brad.wav.fingerprints");
     return 0;
 }

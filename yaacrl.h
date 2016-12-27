@@ -3,16 +3,17 @@
 
 #include "database.h"
 #include <string>
+#include <map>
 
 
 class Yaacrl {
     Database * db;
-    int recognize_hashes(PeakHashCollection *);
+    std::map<std::string, int> recognize_hashes(PeakHashCollection *);
 public:
     Yaacrl();
     int add_file(std::string);
-    int recognize_wav(std::string);
-    int recognize_fingerprints(std::string);
+    std::map<std::string, int> recognize_wav(std::string);
+    std::map<std::string, int> recognize_fingerprints(std::string);
     std::string get_song_by_id(int);
     int fingerprints_to_file(std::string);
     int clear_database();
