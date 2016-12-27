@@ -1,7 +1,7 @@
 #ifndef YAACRL_DATABASE_H
 #define YAACRL_DATABASE_H
 
-#include "mysql.h"
+#include "mysql/mysql.h"
 #include "string"
 #include "fingerprint.h"
 
