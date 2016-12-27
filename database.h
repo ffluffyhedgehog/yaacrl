@@ -2,6 +2,7 @@
 #define YAACRL_DATABASE_H
 
 #include "mysql.h"
+#include "string"
 #include "fingerprint.h"
 
 #define FIELD_FILE_SHA1 "file_sha1"
@@ -16,13 +17,15 @@ public:
     Database();
     ~Database();
     int setup();
+    int drop_tables();
 
     int insert_song(char *, char hash[41]);
     int insert_hashes(int, PeakHashCollection *);
     int set_song_fingerprinted(int);
     int return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** );
+    std::string get_song_by_id(int sid);
 
-    //void get_song_by_id(int sid);
+
     //void get_songs();
     //void delete_unfingerprinted_songs();
     //void get_num_songs();

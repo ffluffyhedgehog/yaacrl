@@ -49,6 +49,17 @@ int Database::setup() {
     return 0;
 }
 
+int Database::drop_tables() {
+    mysql_query(connection, "DROP TABLE IF EXISTS songs");
+    mysql_query(connection, "DROP TABLE IF EXISTS fingerprints");
+    if (strcmp(mysql_error(connection), "") != 0) {
+        std::cout << "MySQL error on drop_tables(): ";
+        std::cout << "mysql_error(connection)";
+        return -1;
+    }
+    return 0;
+}
+
 int Database::insert_song(char *song_name, char *hash) {
     std::string query = "INSERT INTO songs (song_name, file_sha1) values ";
     query += "(\"" + std::string(song_name) + "\", UNHEX(\"" + std::string(hash) + "\"));";
@@ -157,6 +168,26 @@ int Database::return_matches(PeakHashCollection * to_recognize, PeakHashCollecti
     return 0;
 }
 
+
+std::string Database::get_song_by_id(int sid) {
+    std::string query = "SELECT song_name FROM songs WHERE song_id = ";
+    query += std::to_string(sid) + ";";
+    int status = mysql_query(connection, query.c_str());
+    if (status) {
+        std::cout << mysql_error(connection) << std::endl;
+        return "";
+    } else {
+        MYSQL_RES * res = mysql_store_result(connection);
+        if (res == NULL)
+            return "";
+        MYSQL_ROW row;
+        int num_fields = mysql_num_fields(res);
+        std::string s = mysql_fetch_row(res)[0] ;
+        if(res != NULL)
+            mysql_free_result(res);
+        return s;
+    }
+}
 
 /*
   *

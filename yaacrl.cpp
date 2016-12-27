@@ -17,8 +17,13 @@ Yaacrl::~Yaacrl() {
     delete(db);
 }
 
+int Yaacrl::clear_database() {
+    int status = db->drop_tables();
+    return status;
+}
 
-int Yaacrl::add_file(char * filename) {
+int Yaacrl::add_file(std::string filename_string) {
+    const char * filename = filename_string.c_str();
     drwav* pWav = drwav_open_file(filename);
     if (pWav == NULL) {
         return -1;
@@ -52,7 +57,7 @@ int Yaacrl::add_file(char * filename) {
         free(matches_ids);
         return -2;
     }
-    int sid = db->insert_song(filename, hash);
+    int sid = db->insert_song((char*)filename, hash);
 
     // Inserting hashes
     db->insert_hashes(sid, hashes);
@@ -65,7 +70,8 @@ int Yaacrl::add_file(char * filename) {
     return sid;
 }
 
-int Yaacrl::recognize_file(char * filename) {
+int Yaacrl::recognize_file(std::string filename_string) {
+    const char * filename = filename_string.c_str();
     drwav* pWav = drwav_open_file(filename);
     if (pWav == NULL) {
         return -1;
@@ -116,4 +122,8 @@ int Yaacrl::recognize_file(char * filename) {
     free((*hashes).peak_hashes);
     free(hashes);
     return max_id;
+}
+
+std::string Yaacrl::get_song_by_id(int sid) {
+    return db->get_song_by_id(sid);
 }
