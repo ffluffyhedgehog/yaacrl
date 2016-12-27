@@ -7,13 +7,14 @@
 
 class Yaacrl {
     Database * db;
+    int recognize_hashes(PeakHashCollection *);
 public:
     Yaacrl();
     int add_file(std::string);
-    //int add_fingerprints(char *, char *) {};
-    int recognize_file(std::string);
-    //int recognize_fingerprints(char *, char *) {};
+    int recognize_wav(std::string);
+    int recognize_fingerprints(std::string);
     std::string get_song_by_id(int);
+    int fingerprints_to_file(std::string);
     int clear_database();
     ~Yaacrl();
 };
