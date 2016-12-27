@@ -50,11 +50,16 @@ int Database::setup() {
 }
 
 int Database::drop_tables() {
-    mysql_query(connection, "DROP TABLE IF EXISTS songs");
-    mysql_query(connection, "DROP TABLE IF EXISTS fingerprints");
+    mysql_query(connection, "DROP TABLE IF EXISTS fingerprints;");
     if (strcmp(mysql_error(connection), "") != 0) {
         std::cout << "MySQL error on drop_tables(): ";
-        std::cout << "mysql_error(connection)";
+        std::cout << mysql_error(connection);
+        return -1;
+    }
+    mysql_query(connection, "DROP TABLE IF EXISTS songs;");
+    if (strcmp(mysql_error(connection), "") != 0) {
+        std::cout << "MySQL error on drop_tables(): ";
+        std::cout << mysql_error(connection);
         return -1;
     }
     return 0;
