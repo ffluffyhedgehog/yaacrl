@@ -18,10 +18,10 @@ Yaacrl::~Yaacrl() {
 }
 
 
-void Yaacrl::add_file(char * filename) {
+int Yaacrl::add_file(char * filename) {
     drwav* pWav = drwav_open_file(filename);
     if (pWav == NULL) {
-        return ;
+        return -1;
     }
     float* pSampleData = (float*) malloc((size_t)pWav->totalSampleCount * sizeof(float));
     drwav_read_f32(pWav, pWav->totalSampleCount, pSampleData);
@@ -38,14 +38,13 @@ void Yaacrl::add_file(char * filename) {
     if (SHA1Result(&sha1)) {
         SHA1Hex(&sha1, hash);
     }
-    /*
+
     PeakHashCollection matches;
     int * matches_ids;
     db->return_matches(hashes, &matches, &matches_ids);
 
     int new_song_hashes_count = hashes->count;
     int matched_hashes_count = matches.count;
-    printf("%d - %d", new_song_hashes_count, matched_hashes_count);
     if (new_song_hashes_count == matched_hashes_count) {
         free((*hashes).peak_hashes);
         free(hashes);
@@ -53,9 +52,7 @@ void Yaacrl::add_file(char * filename) {
         free(matches_ids);
         return -2;
     }
-    */
     int sid = db->insert_song(filename, hash);
-    std::cout << "SID IS " << sid << "\n";
 
     // Inserting hashes
     db->insert_hashes(sid, hashes);
@@ -63,9 +60,9 @@ void Yaacrl::add_file(char * filename) {
     db->set_song_fingerprinted(sid);
     free((*hashes).peak_hashes);
     free(hashes);
-    //free(matches.peak_hashes);
-    //free(matches_ids);
-
+    free(matches.peak_hashes);
+    free(matches_ids);
+    return sid;
 }
 
 int Yaacrl::recognize_file(char * filename) {

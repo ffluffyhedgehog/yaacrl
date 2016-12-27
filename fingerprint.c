@@ -31,9 +31,6 @@ PeakHashCollection * fingerprint(float * samples, int samples_count) {
                                DEFAULT_OVERLAP_RATIO);
   Peak * peaks = NULL;
   int peaks_count = detect_peaks(&peaks, spec);
-  //IDK BUT WHEN I DELEET THIS SEG FAULT
-  FILE * f = fopen("porn.mp4", "w");
-  fclose(f);
   // qsort(peaks, peaks_count, sizeof(Peak), sort_by_freq);
   // Sorting peaks by freq, because in dejavu indices are swapped
   PeakHash * hashes = NULL;
@@ -98,7 +95,7 @@ int generate_hashes(PeakHash ** peak_hashes, Peak * peaks, int count) {
                                         current_size * sizeof(PeakHash));
   SHA1Context sha;
   int k, t1, t2, freq1, freq2, t_delta;
-  char * sha1_input;
+  char * sha1_input = (char *) malloc(10 * sizeof(char));
   for (int i = 0; i < count; i++) {
     for (int j = 1; j < DEFAULT_FAN_VALUE; j++) {
       if (i + j < count) {

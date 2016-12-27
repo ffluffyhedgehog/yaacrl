@@ -49,26 +49,6 @@ int Database::setup() {
     return 0;
 }
 
-void Database::get_songs() {
-    mysql_query(connection, "SELECT song_id, song_name, HEX(file_sha1) as file_sha1 FROM songs WHERE fingerprinted = 1;");
-    MYSQL_ROW row;
-    MYSQL_RES * res = mysql_store_result(connection);
-    int num_fields = mysql_num_fields(res);
-    std::cout << "There is " << num_fields << " song now!\n";
-    while ((row = mysql_fetch_row(res)))
-    {
-        for(int i = 0; i < num_fields; i++)
-        {
-            if(row[i] != NULL)
-                std::cout << row[i] << std::endl;
-            else
-                std::cout << "NULL" << std::endl;
-        }
-    }
-    if(res != NULL)
-        mysql_free_result(res);
-}
-
 int Database::insert_song(char *song_name, char *hash) {
     std::string query = "INSERT INTO songs (song_name, file_sha1) values ";
     query += "(\"" + std::string(song_name) + "\", UNHEX(\"" + std::string(hash) + "\"));";
@@ -175,39 +155,6 @@ int Database::return_matches(PeakHashCollection * to_recognize, PeakHashCollecti
     matches->peak_hashes = (PeakHash *) realloc(matches->peak_hashes, sizeof(PeakHash) * matches->count);
     (*matched_ids) = (int *) realloc((*matched_ids), sizeof(int) * matches->count);
     return 0;
-}
-
-void Database::get_song_by_id(int sid) {
-    const char * query_template = "SELECT song_name, HEX(file_sha1) as file_sha1 FROM songs WHERE song_id = %d;";
-    char query[256];
-    int status;
-    snprintf(query, 256, query_template, sid);
-    status = mysql_query(connection, query);
-    MYSQL_RES * res = mysql_store_result(connection);
-    MYSQL_ROW row;
-    if (status != 0) {
-        std::cout << mysql_error(connection) << std::endl;
-        if(res != NULL)
-            mysql_free_result(res);
-        return ;
-    }
-    else {
-        int num_fields = mysql_num_fields(res);
-        while ((row = mysql_fetch_row(res)))
-        {
-            // Print all columns
-            for(int i = 0; i < num_fields; i++)
-            {
-                    std::cout << row[i] << std::endl;
-
-
-            }
-        }
-        if(res != NULL)
-            mysql_free_result(res);
-        return;
-
-    }
 }
 
 

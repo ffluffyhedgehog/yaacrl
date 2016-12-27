@@ -8,7 +8,7 @@ class Yaacrl {
     Database * db;
 public:
     Yaacrl();
-    void add_file(char *);
+    int add_file(char *);
     int add_fingerprints(char *, char *) {};
     int recognize_file(char *);
     int recognize_fingerprints(char *, char *) {};
