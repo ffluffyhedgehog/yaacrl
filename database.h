@@ -14,7 +14,7 @@
 class Database {
     MYSQL *connection;
 public:
-    Database();
+    Database(const char *, const char *);
     ~Database();
     int setup();
     int drop_tables();

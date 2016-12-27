@@ -7,9 +7,9 @@
 #include <string>
 
 
-Database::Database() {
+Database::Database(const char * login, const char * pass) {
     connection = mysql_init(NULL);
-    mysql_real_connect(connection, "localhost", "root", "tassadar", "yaacrl", 3308, NULL, 0);
+    mysql_real_connect(connection, "localhost", login, pass, "yaacrl", 3308, NULL, 0);
     if (strcmp(mysql_error(connection), "") != 0) {
         std::cout << "MySQL improperly configured. Please create user 'yaacrl' with no password;";
         exit(1);

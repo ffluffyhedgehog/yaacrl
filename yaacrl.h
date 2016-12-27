@@ -10,7 +10,7 @@ class Yaacrl {
     Database * db;
     std::map<std::string, int> recognize_hashes(PeakHashCollection *);
 public:
-    Yaacrl();
+    Yaacrl(std::string, std::string);
     int add_file(std::string);
     std::map<std::string, int> recognize_wav(std::string);
     std::map<std::string, int> recognize_fingerprints(std::string);

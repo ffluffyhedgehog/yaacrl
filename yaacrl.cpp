@@ -8,8 +8,8 @@
 #include "sha1/sha1.h"
 #include <map>
 
-Yaacrl::Yaacrl() {
-    db = new Database();
+Yaacrl::Yaacrl(std::string login, std::string pass) {
+    db = new Database(login.c_str(), pass.c_str());
     db->setup();
 }
 
