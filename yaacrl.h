@@ -8,12 +8,11 @@ class Yaacrl {
     Database * db;
 public:
     Yaacrl();
-    void init();
-    void fingerprint_file(char *);
-    void recognize_file(char *);
+    void add_file(char *);
+    int add_fingerprints(char *, char *) {};
+    int recognize_file(char *);
+    int recognize_fingerprints(char *, char *) {};
     ~Yaacrl();
-
-
 };
 
 

@@ -14,12 +14,15 @@ class Database {
     MYSQL *connection;
 public:
     Database();
+    ~Database();
+    int setup();
     void get_songs();
     int insert_song(char *, char hash[41]);
-    void insert_hashes(int, PeakHashCollection *);
-    void set_song_fingerprinted(int);
-    void return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** );
+    int insert_hashes(int, PeakHashCollection *);
+    int set_song_fingerprinted(int);
+    int return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** );
     void get_song_by_id(int sid);
+
     //void delete_unfingerprinted_songs();
     //void get_num_songs();
     //void get_num_fingerprints();
@@ -29,7 +32,7 @@ public:
 
 
 
-    ~Database();
+
 };
 
 
