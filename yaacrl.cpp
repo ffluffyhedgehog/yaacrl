@@ -71,19 +71,6 @@ int Yaacrl::add_file(std::string filename_string) {
         SHA1Hex(&sha1, hash);
     }
 
-    PeakHashCollection matches;
-    int * matches_ids;
-    db->return_matches(hashes, &matches, &matches_ids);
-
-    int new_song_hashes_count = hashes->count;
-    int matched_hashes_count = matches.count;
-    if (new_song_hashes_count == matched_hashes_count) {
-        free((*hashes).peak_hashes);
-        free(hashes);
-        free(matches.peak_hashes);
-        free(matches_ids);
-        return -2;
-    }
     int sid = db->insert_song((char*)filename, hash);
 
     // Inserting hashes
@@ -92,8 +79,6 @@ int Yaacrl::add_file(std::string filename_string) {
     db->set_song_fingerprinted(sid);
     free((*hashes).peak_hashes);
     free(hashes);
-    free(matches.peak_hashes);
-    free(matches_ids);
     return sid;
 }
 
@@ -155,11 +140,10 @@ std::map<std::string, int> Yaacrl::recognize_hashes(void* vhashes) {
     PeakHashCollection matches;
     int * matches_ids;
     db->return_matches(hashes, &matches, &matches_ids);
-    std::cout << "total samples2: " << hashes->count;
-    std::cout << "total samples1: " << matches.count;
     std::map <std::string, int> hashes_map;
     std::map <std::string, int> matches_map;
     std::string hash;
+    int correct_matches_count = 0;
     for (int i = 0; i < hashes->count; i++) {
         hash = std::string(hashes->peak_hashes[i].hash);
         hashes_map[hash] =  hashes->peak_hashes[i].time;
@@ -181,6 +165,10 @@ std::map<std::string, int> Yaacrl::recognize_hashes(void* vhashes) {
     int max_id = -1;
     int current_diff;
     for (int i = 0; i < matches.count; i++) {
+        if (matches_diffs[i] < 0)
+            continue;
+        else
+            correct_matches_count++;
         if (diff_counter.find(matches_diffs[i]) == diff_counter.end()) {
             diff_counter[matches_diffs[i]] = {};
         }
@@ -194,25 +182,30 @@ std::map<std::string, int> Yaacrl::recognize_hashes(void* vhashes) {
             max_id= matches_ids[i];
         }
     }
+    std::cout << "samples of new wav: " << hashes->count << std::endl;
+    std::cout << "samples returned: " << matches.count << std::endl;
+    std::cout << "correct samples returned: " << correct_matches_count << std::endl;
+    /*
     for(std::map<int, std::map<int,int> >::const_iterator it = diff_counter.begin(); it != diff_counter.end(); ++it)
     {
         std::cout << it->first << "\n";
         for (std::map<int,int>::const_iterator iter = it->second.begin(); iter != it->second.end(); ++iter)
-            std::cout << "\t" << iter->first << ":" << iter->first << std::endl;
+            std::cout << "\t" << iter->first << ":" << iter->second << std::endl;
     }
+    */
     free(matches.peak_hashes);
     free(matches_ids);
     free((*hashes).peak_hashes);
     free(hashes);
     std::map <std::string, int> result;
-    if (max_id == -1) {
-        result["success"] = 0;
+    if (max_id == -1 || (correct_matches_count*100) < hashes->count || correct_matches_count < 20) {
+        result["success"] = -2;
         return result;
     }
     result["success"] = 1;
     result["id"] = max_id;
     result["offset"] = max_diff * DEFAULT_WINDOW_SIZE * DEFAULT_OVERLAP_RATIO / DEFAULT_FS ;
-    result["percentage"] = 100 * max_count / matches.count;
+    result["percentage"] = 100 * max_count / correct_matches_count;
     return result;
 }
 
