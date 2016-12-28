@@ -42,4 +42,7 @@ ckiss_fft.o: kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 clean:
 	rm -rf *.o libyaacrl.so
 
+exe:
+	g++ -o main main.cpp yaacrl.cpp database.cpp specgram.c fingerprint.c sha1/sha1.c kiss_fft/kiss_fft.c -L/usr/lib  -lmysqlclient -lpthread -lz -lm -ldl -lssl -lcrypto -I/usr/include/mysql -g
+
 

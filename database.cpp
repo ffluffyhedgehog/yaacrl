@@ -116,7 +116,7 @@ int Database::set_song_fingerprinted(int sid) {
 
 
 int Database::return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** matched_ids) {
-    std::string query = "SELECT HEX(hash), song_id, offset FROM fingerprints WHERE hash IN (";
+    std::string query = "SELECT LOWER(HEX(hash)), song_id, offset FROM fingerprints WHERE hash IN (";
     for (int i = 0; i < to_recognize->count; i++) {
         query += "UNHEX(\"" + std::string(to_recognize->peak_hashes[i].hash) + "\")";
         if (i + 1 == to_recognize->count)

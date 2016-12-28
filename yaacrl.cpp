@@ -4,6 +4,7 @@
 #include "./dr_wav/dr_wav.h"
 #include "fingerprint.h"
 #include <string.h>
+#include <algorithm>
 #include "iostream"
 #include "sha1/sha1.h"
 #include <map>
@@ -153,22 +154,31 @@ std::map<std::string, int> Yaacrl::recognize_hashes(PeakHashCollection * hashes)
     PeakHashCollection matches;
     int * matches_ids;
     db->return_matches(hashes, &matches, &matches_ids);
-
-    std::map <char *, int> hashes_map;
+    std::cout << "total samples2: " << hashes->count;
+    std::cout << "total samples1: " << matches.count;
+    std::map <std::string, int> hashes_map;
+    std::map <std::string, int> matches_map;
+    std::string hash;
     for (int i = 0; i < hashes->count; i++) {
-        hashes_map[hashes->peak_hashes[i].hash] =  hashes->peak_hashes[i].time;
+        hash = std::string(hashes->peak_hashes[i].hash);
+        hashes_map[hash] =  hashes->peak_hashes[i].time;
+        hash = std::string(matches.peak_hashes[i].hash);
+        matches_map[hash] =  matches.peak_hashes[i].time;
     }
     int * matches_diffs = (int *) malloc(sizeof(int) * matches.count);
     for (int i = 0; i < matches.count; i++) {
-        matches_diffs[i] = matches.peak_hashes[i].time - hashes_map[matches.peak_hashes[i].hash];
+        hash = std::string(hashes->peak_hashes[i].hash);
+        matches_diffs[i] = matches_map[hash] - hashes_map[hash];
     }
     hashes_map.clear();
+    matches_map.clear();
 
 
     std::map< int,std::map<int,int> > diff_counter;
     int max_count = 0;
     int max_diff = 0;
     int max_id = -1;
+    int current_diff;
     for (int i = 0; i < matches.count; i++) {
         if (diff_counter.find(matches_diffs[i]) == diff_counter.end()) {
             diff_counter[matches_diffs[i]] = {};
@@ -178,10 +188,16 @@ std::map<std::string, int> Yaacrl::recognize_hashes(PeakHashCollection * hashes)
         }
         diff_counter[matches_diffs[i]][matches_ids[i]] += 1;
         if (diff_counter[matches_diffs[i]][matches_ids[i]] > max_count) {
-            max_count = diff_counter[matches_diffs[i]][matches_ids[i]] = 0;
+            max_count = diff_counter[matches_diffs[i]][matches_ids[i]];
             max_diff = matches_diffs[i];
             max_id= matches_ids[i];
         }
+    }
+    for(std::map<int, std::map<int,int> >::const_iterator it = diff_counter.begin(); it != diff_counter.end(); ++it)
+    {
+        std::cout << it->first << "\n";
+        for (std::map<int,int>::const_iterator iter = it->second.begin(); iter != it->second.end(); ++iter)
+            std::cout << "\t" << iter->first << ":" << iter->first << std::endl;
     }
     free(matches.peak_hashes);
     free(matches_ids);
@@ -190,8 +206,8 @@ std::map<std::string, int> Yaacrl::recognize_hashes(PeakHashCollection * hashes)
     std::map <std::string, int> result;
     result["success"] = 1;
     result["id"] = max_id;
-    result["offset"] = max_diff;
-    result["percentage"] = 100;
+    result["offset"] = max_diff * DEFAULT_WINDOW_SIZE * DEFAULT_OVERLAP_RATIO / DEFAULT_FS ;
+    result["percentage"] = 100 * max_count / matches.count;
     return result;
 }
 
