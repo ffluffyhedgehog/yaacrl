@@ -8,7 +8,7 @@
 
 class Yaacrl {
     Database * db;
-    std::map<std::string, int> recognize_hashes(PeakHashCollection *);
+    std::map<std::string, int> recognize_hashes(void*);
 public:
     Yaacrl(std::string, std::string);
     int add_file(std::string);

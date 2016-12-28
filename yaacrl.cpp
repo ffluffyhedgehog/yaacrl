@@ -150,7 +150,8 @@ std::map<std::string, int> Yaacrl::recognize_fingerprints(std::string filename) 
 }
 
 
-std::map<std::string, int> Yaacrl::recognize_hashes(PeakHashCollection * hashes) {
+std::map<std::string, int> Yaacrl::recognize_hashes(void* vhashes) {
+    PeakHashCollection* hashes = (PeakHashCollection*) vhashes;
     PeakHashCollection matches;
     int * matches_ids;
     db->return_matches(hashes, &matches, &matches_ids);

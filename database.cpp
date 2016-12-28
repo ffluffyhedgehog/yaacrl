@@ -86,7 +86,8 @@ int Database::insert_song(char *song_name, char *hash) {
     }
 }
 
-int Database::insert_hashes(int sid, PeakHashCollection * hashes) {
+int Database::insert_hashes(int sid, void* vhashes) {
+    PeakHashCollection* hashes = (PeakHashCollection*) vhashes;
     std::string RES = "INSERT IGNORE INTO fingerprints (hash, song_id, offset) values ";
     for (int i = 0; i < hashes->count; i++) {
         RES += "(UNHEX(\"" + std::string(hashes->peak_hashes[i].hash) + "\"), " +std::to_string(sid) + ", " +std::to_string(hashes->peak_hashes[i].time) + ")";
@@ -115,7 +116,9 @@ int Database::set_song_fingerprinted(int sid) {
 }
 
 
-int Database::return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** matched_ids) {
+int Database::return_matches(void* vto_recognize, void* vmatches, int ** matched_ids) {
+    PeakHashCollection* to_recognize = (PeakHashCollection*) vto_recognize;
+    PeakHashCollection* matches = (PeakHashCollection*) vmatches;
     std::string query = "SELECT LOWER(HEX(hash)), song_id, offset FROM fingerprints WHERE hash IN (";
     for (int i = 0; i < to_recognize->count; i++) {
         query += "UNHEX(\"" + std::string(to_recognize->peak_hashes[i].hash) + "\")";

@@ -20,9 +20,9 @@ public:
     int drop_tables();
 
     int insert_song(char *, char hash[41]);
-    int insert_hashes(int, PeakHashCollection *);
+    int insert_hashes(int, void*);
     int set_song_fingerprinted(int);
-    int return_matches(PeakHashCollection * to_recognize, PeakHashCollection * matches, int ** );
+    int return_matches(void*, void*, int ** );
     std::string get_song_by_id(int sid);
 
 
