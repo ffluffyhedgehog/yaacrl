@@ -2,9 +2,11 @@ full: yaacrl.o database.o specgram.o fingerprint.o sha1.o kiss_fft.o
 	g++ -shared -fPIC -o libyaacrl.so yaacrl.o database.o specgram.o fingerprint.o sha1.o kiss_fft.o -L/usr/lib  -lmysqlclient -lpthread -lz -lm -ldl -lssl -lcrypto -I/usr/include/mysql -g
 
 install:
+	rm -rf /usr/lib/libyaacrl.so /usr/include/yaacrl
 	cp libyaacrl.so /usr/lib/libyaacrl.so
 	mkdir /usr/include/yaacrl
 	cp yaacrl.h /usr/include/yaacrl/yaacrl.h
+	cp database.h /usr/include/yaacrl/database.h
 
 yaacrl.o:
 	g++ -fPIC -c yaacrl.cpp

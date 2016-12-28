@@ -3,7 +3,6 @@
 
 #include "mysql/mysql.h"
 #include "string"
-#include "fingerprint.h"
 
 #define FIELD_FILE_SHA1 "file_sha1"
 #define FIELD_SONG_ID "song_id"
