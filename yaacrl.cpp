@@ -205,6 +205,10 @@ std::map<std::string, int> Yaacrl::recognize_hashes(void* vhashes) {
     free((*hashes).peak_hashes);
     free(hashes);
     std::map <std::string, int> result;
+    if (max_id == -1) {
+        result["success"] = 0;
+        return result;
+    }
     result["success"] = 1;
     result["id"] = max_id;
     result["offset"] = max_diff * DEFAULT_WINDOW_SIZE * DEFAULT_OVERLAP_RATIO / DEFAULT_FS ;

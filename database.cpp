@@ -89,19 +89,26 @@ int Database::insert_song(char *song_name, char *hash) {
 int Database::insert_hashes(int sid, void* vhashes) {
     PeakHashCollection* hashes = (PeakHashCollection*) vhashes;
     std::string RES = "INSERT IGNORE INTO fingerprints (hash, song_id, offset) values ";
+    int status;
     for (int i = 0; i < hashes->count; i++) {
         RES += "(UNHEX(\"" + std::string(hashes->peak_hashes[i].hash) + "\"), " +std::to_string(sid) + ", " +std::to_string(hashes->peak_hashes[i].time) + ")";
-        if (i + 1 == hashes->count)
+        if (i+1 == hashes->count || (i % 1000 == 0 && i)) {
             RES += ";";
+            status = mysql_query(connection, RES.c_str());
+            if (status) {
+                std::cout << "MySQL error on insert_hashes():" <<mysql_error(connection);
+                return -1;
+            }
+            if (i % 1000 == 0 && i) {
+                RES = "INSERT IGNORE INTO fingerprints (hash, song_id, offset) values ";
+            }
+            else {
+                return 0;
+            }
+        }
         else
             RES += ", ";
     }
-    int status = mysql_query(connection, RES.c_str());
-    if (status) {
-        std::cout << "MySQL error on insert_hashes():" <<mysql_error(connection);
-        return -1;
-    }
-    return 0;
 }
 
 int Database::set_song_fingerprinted(int sid) {
